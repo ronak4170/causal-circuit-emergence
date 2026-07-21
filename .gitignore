@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+causal_interp_env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project-specific
+/results/*.pkl
+/data/*
+/logs/*
+
+# OS
+.DS_Store
