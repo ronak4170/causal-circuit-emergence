@@ -4,6 +4,7 @@ on association-only questions with the correct answer shown directly, so the
 model learns the output FORMAT and gets initial signal on the easiest rung
 before RFT has to bootstrap from zero accepted rollouts ("reward sparsity").
 """
+import os
 import random
 
 import torch
@@ -38,6 +39,7 @@ def build_warmup_examples(n, seed=0):
 
 
 def main():
+    os.makedirs("results", exist_ok=True)
     print("Building warm-up examples...")
     examples = build_warmup_examples(N_EXAMPLES, seed=0)
 
