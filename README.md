@@ -64,9 +64,17 @@ isn't ready yet.
 
 ## Status
 
-**Phase 0: in progress.** See [docs/phase0_setup.md](docs/phase0_setup.md) for the current
-environment-setup and tool-validation guide. Phases A–F have not started; hypotheses are
-pre-registered in [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
+**Phase 0: complete.** Grokking + LLC and IOI patching reproductions validated the tooling
+(see [docs/phase0_setup.md](docs/phase0_setup.md)).
+
+**Phase A: complete — partial support, weak (leaning falsification).** See
+[results/phase_a_conclusion.md](results/phase_a_conclusion.md) for the full write-up. LLC
+showed one clear, replicated transition early in training; per-rung accuracy jumps were
+noisy and not cleanly ordered as Pearl's hierarchy predicts, and the association rung's
+emergence was untestable due to a warm-up-induced ceiling effect.
+
+Phases B–F have not started; hypotheses are pre-registered in
+[PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
 
 ## Project Context
 

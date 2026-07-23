@@ -19,7 +19,25 @@ accuracy jumps, or the three rungs emerge simultaneously or out of the predicted
 
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
-*(empty — to be filled in after Phase A is run)*
+**Partial support, weak — leaning toward falsification.** Full write-up in
+`results/phase_a_conclusion.md`; summary:
+
+- Association showed no detectable jump because a required pre-RFT warm-up
+  step (added to solve reward sparsity) had already saturated it to ~100%
+  before RFT began -- this makes the "association emerges first" claim
+  untestable in this run, a design confound rather than evidence either way.
+- Intervention and counterfactual each showed a detected jump (iteration 10
+  and 86 respectively, by a pre-specified but not strictly blinded
+  20pp/10-iteration rolling-mean criterion), but both are noisy plateaus/drifts
+  rather than clean discrete transitions.
+- LLC showed one clear, replicated transition (across two independent runs,
+  local CPU and Colab GPU) in the first 15-30 iterations, then a flat plateau
+  for the rest of training -- it does not show a second transition aligning
+  with the later counterfactual jump.
+- Falsified: the clean, fully-ordered three-stage picture. Not falsified:
+  some jump-like structure exists and LLC is not simply flat throughout.
+- Checkpoint selected for Phase B: iteration 135 (final checkpoint) -- see
+  conclusion doc for rationale and the iteration-90 fallback option.
 
 ---
 
