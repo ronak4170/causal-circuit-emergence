@@ -73,7 +73,14 @@ showed one clear, replicated transition early in training; per-rung accuracy jum
 noisy and not cleanly ordered as Pearl's hierarchy predicts, and the association rung's
 emergence was untestable due to a warm-up-induced ceiling effect.
 
-Phases B–F have not started; hypotheses are pre-registered in
+**Phase B: complete — full transfer supported, with a caveat.** See
+[results/phase_b_conclusion.md](results/phase_b_conclusion.md). A small 7-component circuit
+(attention heads L7H5, L10H7, L8H11 + MLP layers 7/9/10/11) restored 90–98% of clean-run
+behavior across all four DAG topologies on held-out questions. Caveat: the circuit was
+identified from a batch spanning all topologies at once, not a strict leave-one-topology-out
+test — listed as a follow-up.
+
+Phases C–F have not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
 
 ## Project Context

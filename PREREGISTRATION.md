@@ -53,7 +53,26 @@ is topology-specific and does not transfer.
 
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
-*(empty — to be filled in after Phase B is run)*
+**Supported (closest to "full transfer"), with a caveat.** Full write-up in
+`results/phase_b_conclusion.md`; summary:
+
+- A small candidate circuit (attention heads L7H5, L10H7, L8H11 + MLP layers
+  7, 9, 10, 11 -- 7 of 156 total components) was identified via activation
+  patching averaged over 60 clean/corrupt intervention pairs across all 4
+  topologies at once.
+- Patching only these 7 components restored 90-98% of the clean-run answer
+  on FRESH held-out pairs in every topology (chain 0.981, fork 0.974,
+  collider 0.904, confounded 0.974) -- including collider and confounded,
+  the two topologies expected to be hardest to transfer to.
+- Caveat: the circuit was identified from a batch that already included each
+  topology's own data, so this shows generalization to new questions within
+  seen topologies, not transfer to a wholly unseen topology. A stricter
+  leave-one-topology-out version is listed as a follow-up.
+- Method deviation from the starter spec: one circuit from a mixed-topology
+  batch, not separate per-source circuits tested via a source->target
+  matrix -- disclosed in the conclusion doc.
+- Circuit carried into Phase C: L7H5, L10H7, L8H11 heads; MLP layers 7, 9,
+  10, 11; same iteration-135 checkpoint.
 
 ---
 
