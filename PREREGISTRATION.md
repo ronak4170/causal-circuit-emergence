@@ -150,6 +150,35 @@ This pre-registration checklist is complete: predictions written with exact thre
 ablation method specified (mean ablation); test sets specified; about to be committed and
 pushed to public GitHub BEFORE any Phase C experiment code is written.
 
+### Addendum (written after `src/phase_c_reference_answers.py` was run once, but BEFORE
+any ablation experiment or scoring — this is a test-set-construction fix, not a
+result-driven change; no ablated-model output has been observed at this point)
+
+Running the test-set builder using the naive topology_var_map (copied from Phase B's
+INTERVENTION-divergence pairs) produced **zero** usable questions in all 4 topologies.
+Root cause, verified directly: association/intervention divergence for the (treat_var,
+target_var) pairs the model was ACTUALLY TRAINED ON in Phase A (`causal_dag_task.QA_CONFIG`)
+is ~0.01 for chain, ~0.01 for fork, ~0.00 for collider, and 0.41 for confounded. This is not
+a bug -- it is the direct, intended consequence of Phase A's Step 1.3 design, which
+deliberately built chain/fork/collider as *unconfounded control cases* and confounded as
+the *one* topology with a real backdoor path. Testing Phase C's directional-bias prediction
+requires a topology where the two true answers actually differ; only confounded has that
+property for in-distribution questions. Using a different, out-of-distribution variable
+pair for chain/fork/collider (e.g. forcing a collider's C variable, never used as a `do`
+target during Phase A training) would confound any observed "errors" with general
+out-of-distribution incompetence rather than isolating the ablation's effect -- so that
+option is rejected.
+
+**Scope narrowing, decided now:** the interventional test set (Prediction 1) is restricted
+to the **confounded topology only**, with n increased from 25 to 100 to compensate for
+using one topology instead of four. Predictions 2 and 3's associational test set is
+similarly built from confounded-topology association questions, count-matched. All three
+predictions' thresholds (0.65 effect size, 10pp tolerance, 2x asymmetry) are unchanged from
+above. This narrows what Phase C can say about *cross-topology* generalization of the
+ablation signature (it can no longer claim the directional bias holds on chain/fork/collider
+specifically, since those topologies cannot produce a real test of it), but the core
+directional-bias claim itself is still fully testable and still meaningful.
+
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
 *(empty — to be filled in after Phase C is run)*
