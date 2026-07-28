@@ -75,12 +75,39 @@ intervention's effect" mechanism concentrated in L7H5 + a handful of
 late-layer MLPs -- but a stricter leave-one-topology-out version of this
 test (below) would be needed to fully rule out the weaker alternative.
 
+## Random-circuit baseline check (added after initial write-up)
+
+A natural objection to the transfer result above: this task is narrow and
+rigidly templated (a single percentage token, read at one teacher-forced
+position), so perhaps *any* small set of late-layer components would
+restore most of the clean-run answer, simply because the task gives the
+model so little room to express its answer differently. If true, "we found
+THE circuit" would be a much weaker claim than the transfer numbers alone
+suggest.
+
+Tested directly: 25 random circuits of the same size and composition (3
+random attention heads + 4 random MLP layers, uniformly sampled) were scored
+with the identical cross-topology procedure, on the identical held-out pairs
+(`src/phase_b_random_baseline.py`).
+
+**Result:** random circuits restored a mean of only **26.7%** (std 17.4%,
+range -0.5% to 53.4%) of clean-run behavior, vs. the candidate circuit's
+**95.8%**. The candidate circuit outperformed **all 25** random circuits
+(100th percentile) -- see `results/phase_b_random_baseline_hist.png` for the
+full distribution. This rules out the "any late-layer components would do
+this" alternative explanation: L7H5 and its supporting components are doing
+something the vast majority of other components (including other late-layer
+ones, since layers were sampled from all 12) are not. This substantially
+strengthens confidence in the Step 3/4 findings above.
+
 ## Follow-ups for a stricter version of this test
 
 1. **Leave-one-topology-out circuit identification**: repeat Step 3 using
    only 3 of the 4 topologies, then test transfer to the held-out 4th
    topology never seen during circuit identification. This is the version
-   that would most cleanly settle the caveat above.
+   that would most cleanly settle the mixed-batch caveat above. (The
+   random-circuit check above addresses a different concern -- task
+   narrowness -- and does not substitute for this.)
 2. **Per-topology baseline accuracy**: measure the model's own (unpatched)
    generation accuracy separately per topology, to rule out "collider is
    just intrinsically harder" as an alternative explanation for its

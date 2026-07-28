@@ -76,9 +76,10 @@ emergence was untestable due to a warm-up-induced ceiling effect.
 **Phase B: complete — full transfer supported, with a caveat.** See
 [results/phase_b_conclusion.md](results/phase_b_conclusion.md). A small 7-component circuit
 (attention heads L7H5, L10H7, L8H11 + MLP layers 7/9/10/11) restored 90–98% of clean-run
-behavior across all four DAG topologies on held-out questions. Caveat: the circuit was
-identified from a batch spanning all topologies at once, not a strict leave-one-topology-out
-test — listed as a follow-up.
+behavior across all four DAG topologies on held-out questions, decisively beating a
+random-circuit baseline (25 random circuits averaged 26.7% vs. the candidate's 95.8%, 100th
+percentile). Caveat: the circuit was identified from a batch spanning all topologies at once,
+not a strict leave-one-topology-out test — listed as a follow-up.
 
 Phases C–F have not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.

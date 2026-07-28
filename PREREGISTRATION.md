@@ -71,6 +71,11 @@ is topology-specific and does not transfer.
 - Method deviation from the starter spec: one circuit from a mixed-topology
   batch, not separate per-source circuits tested via a source->target
   matrix -- disclosed in the conclusion doc.
+- Random-circuit baseline (added after initial write-up): 25 random circuits
+  of the same size/composition restored only 26.7% on average (std 17.4%,
+  max 53.4%) vs. the candidate circuit's 95.8% -- candidate beat all 25
+  (100th percentile), ruling out "any small late-layer circuit would do this
+  on such a narrow task" as an explanation.
 - Circuit carried into Phase C: L7H5, L10H7, L8H11 heads; MLP layers 7, 9,
   10, 11; same iteration-135 checkpoint.
 

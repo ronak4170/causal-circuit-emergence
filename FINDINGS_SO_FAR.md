@@ -139,6 +139,17 @@ on a fresh 20-question intervention eval — well above chance).
   but it made that pair useless for the minimal-pair patching design, which
   needs a real divergence to detect. Fixed by switching to the (A, C) pair,
   which has a real direct causal edge.
+- **The circuit is not an artifact of the task being narrow and templated.**
+  A natural worry: since the answer is a single teacher-forced percentage
+  token, maybe *any* small set of late-layer components would restore most
+  of the clean-run answer regardless of which ones. Tested directly: 25
+  random circuits of the same size/composition (3 random heads + 4 random
+  MLP layers) restored a mean of only 26.7% (std 17.4%, max 53.4%) on the
+  same held-out pairs, vs. the candidate circuit's 95.8% — the candidate beat
+  all 25 random circuits (100th percentile). This rules out the
+  task-narrowness explanation and substantially strengthens confidence that
+  L7H5 and its supporting components are doing something specific, not just
+  "whatever late-layer components happen to be patched."
 
 **Verdict:** closest to "full transfer" support for RQ2 — the model appears to
 have learned one shared, topology-general intervention-computation mechanism
