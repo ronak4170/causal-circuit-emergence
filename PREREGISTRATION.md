@@ -91,6 +91,65 @@ theory-predicted, directional failure — rather than generic random degradation
 associational-style (e.g. the error distribution is statistically indistinguishable from
 random degradation across answer categories).
 
+### Pre-registered predictions (written BEFORE any Phase C experiment code exists)
+
+**Circuit under test:** L7H5, L10H7, L8H11 (attention heads); MLP layers 7, 9, 10, 11.
+Same set identified and validated (random-circuit baseline, 100th percentile) in Phase B.
+Same iteration-135 checkpoint.
+
+**Ablation method:** mean ablation (not zero ablation) — each candidate component's
+output is set to its mean activation, computed over a diverse set of causal-DAG prompts
+spanning all 3 rungs and all 4 topologies (regenerated via `causal_dag_task.generate_instance`
+with a fixed seed, analogous to Phase A's training curriculum distribution — the literal
+Phase A prompt log was not saved verbatim, so an equivalent freshly-sampled distribution is
+used instead; this is disclosed as a minor deviation from "compute means from Phase A's
+actual training prompts"). This choice is locked in now and will not be switched to zero
+ablation even if mean ablation produces messier results.
+
+**Test set (interventional):** intervention questions from all 4 topologies, target
+n=25/topology, seed=42, kept only if `|associational_true - interventional_true| >= 0.15`
+(the divergence filter — without it the directional test is undefined). Exact code:
+`src/phase_c_reference_answers.py`.
+
+**Test set (associational, for Predictions 2/3):** pure association-rung questions from the
+same 4 topologies, count matched to however many interventional questions were actually
+collected per topology.
+
+**Tie tolerance for directional classification:** `|d_interventional - d_associational| < 0.02`
+counts as a tie, not a win for either side.
+
+**Accuracy tolerance (matching Phase A/B convention throughout this project):** 0.10.
+
+---
+
+**Prediction 1 — Directional bias (main claim).** On the interventional test set, after
+ablating the circuit, the ablated model's predicted probability will be closer to the
+associational true answer than to the interventional true answer on **more than 50%** of
+decidable (non-tie) cases. Tested with a one-sided binomial test (H0: p=0.5, alternative
+"greater"). **Supported** requires BOTH statistical significance (p < 0.05) AND a meaningful
+effect size (fraction closer-to-associational >= 0.65) — a barely-significant 52% would not
+count as genuine support.
+
+**Prediction 2 — Selectivity.** On the pure associational test set, ablated accuracy
+(within 0.10 tolerance of the true associational answer) will be within **10 percentage
+points** of un-ablated accuracy on the same questions.
+
+**Prediction 3 — Effect asymmetry.** The accuracy drop (un-ablated minus ablated) on the
+interventional test set will be **at least 2x** the accuracy drop on the associational test
+set.
+
+**Interpretation table (fixed now, not chosen after seeing results):**
+- All three supported -> circuit implements a directional, intervention-specific mechanism.
+- P1 fails -> circuit matters but doesn't cleanly implement intervention-vs-association;
+  errors are more diffuse than a strict do-calculus account predicts.
+- P2 fails -> ablation is too broad / circuit serves multiple functions, not
+  intervention-specific.
+- P3 fails -> circuit is generic to causal-DAG reasoning, not intervention-specific.
+
+This pre-registration checklist is complete: predictions written with exact thresholds;
+ablation method specified (mean ablation); test sets specified; about to be committed and
+pushed to public GitHub BEFORE any Phase C experiment code is written.
+
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
 *(empty — to be filled in after Phase C is run)*
