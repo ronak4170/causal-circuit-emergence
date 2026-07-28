@@ -10,15 +10,18 @@ from causal_dag_task import (sample_structural_equations, estimate_association,
                               estimate_intervention, render_intervention_question,
                               render_association_question)
 
+# Restricted to confounded topology only, per the PREREGISTRATION.md addendum: the
+# (treat_var, target_var) pairs the model was ACTUALLY TRAINED ON in Phase A
+# (causal_dag_task.QA_CONFIG) show ~0 association/intervention divergence for
+# chain/fork/collider by design (Step 1.3's deliberate unconfounded control cases).
+# Only confounded's (A, B) pair has real divergence (~0.41), so it's the only
+# topology where Prediction 1's directional test is even meaningful in-distribution.
 TOPOLOGY_VAR_MAP = {
-    "chain": [("A", "C"), ("B", "C")],
-    "fork": [("A", "B"), ("A", "C")],
-    "collider": [("A", "C"), ("B", "C")],
-    "confounded": [("A", "C")],
+    "confounded": [("A", "B")],
 }
 
 
-def build_phase_c_test_set(n_per_topology=25, seed=42, min_divergence=0.15):
+def build_phase_c_test_set(n_per_topology=100, seed=42, min_divergence=0.15):
     rng = random.Random(seed)
     test_questions = []
 
@@ -88,7 +91,7 @@ def build_associational_test_set(counts_per_topology, seed=43):
 
 
 if __name__ == "__main__":
-    test_set = build_phase_c_test_set(n_per_topology=25, seed=42, min_divergence=0.15)
+    test_set = build_phase_c_test_set(n_per_topology=100, seed=42, min_divergence=0.15)
     print(f"\nTotal interventional test questions: {len(test_set)}")
 
     divergences = [q["divergence"] for q in test_set]
