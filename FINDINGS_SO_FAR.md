@@ -1,10 +1,11 @@
-# Findings and Conclusions So Far (Phase 0, Phase A, Phase B)
+# Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C)
 
-**Last updated:** after Phase B completion, before Phase C.
+**Last updated:** after Phase C completion, before Phase D.
 
-This document synthesizes what has actually been found across the three completed
+This document synthesizes what has actually been found across the four completed
 phases, separated from the phase-by-phase working notes in `docs/phase0_setup.md`,
-`results/phase_a_conclusion.md`, and `results/phase_b_conclusion.md`. Read those for
+`results/phase_a_conclusion.md`, `results/phase_b_conclusion.md`, and
+`results/phase_c_conclusion.md`. Read those for
 full methodological detail; this file is the consolidated "what do we actually know
 now" summary.
 
@@ -166,7 +167,67 @@ MLP layers 7, 9, 10, 11; iteration-135 checkpoint.
 
 ---
 
-## 4. Cross-Cutting Deductions (things learned across all three phases)
+## 4. Phase C — RQ3: Ablation Signature (all 3 predictions not supported — but with the
+most interesting finding of the project underneath)
+
+**Setup:** three predictions pre-registered and pushed to GitHub (commit `e2ae1c7`,
+timestamped before any Phase C code existed) — directional bias, selectivity, and effect
+asymmetry, each with exact thresholds. Mean ablation of the Phase B circuit, tested on 100
+confounded-topology intervention questions + 100 count-matched associational questions.
+
+**A test-set construction problem surfaced first, before any ablation ran.** The naive
+approach (reusing Phase B's variable-pair choices) produced zero usable questions in all 4
+topologies. Root cause: association and intervention answers only genuinely diverge, for
+the variable pairs the model was actually trained on, in the confounded topology (0.41
+divergence) — chain/fork/collider were deliberately built in Phase A as *unconfounded
+control cases* with ~0 divergence. This forced narrowing the test set to confounded only.
+Documented as a pre-registration addendum (commit `6cb2884`) before any ablation was run
+or scored, preserving the pre-registration discipline.
+
+**All three predictions failed as stated:**
+
+| Prediction | Result |
+|---|---|
+| P1 (directional bias) | Exactly 50/50 split, p=0.540 |
+| P2 (selectivity) | Associational accuracy 98%→79% (19pp drop, exceeds 10pp tolerance) |
+| P3 (asymmetry) | Interventional accuracy 0%→0% (floor effect, no drop to measure) |
+
+**But inspecting the raw predictions (not just the pass/fail summary) revealed the real
+story:** the *un-ablated* model was already at 0% interventional accuracy on confounded
+questions, answering in the associational direction 100% of the time *before any ablation
+at all* — Pearl's predicted associational-shortcut failure mode was already this model's
+baseline behavior on its hardest topology, leaving no room for Prediction 1 to detect a
+*shift*, since there was nowhere further "associational" to shift to. Ablation didn't push
+the model more toward association — it collapsed the model's output to a single constant
+(0.10) for all 100 interventional questions regardless of the true answer's direction,
+while associational-question outputs stayed bimodal but shifted (0.85→1.0), producing the
+milder selectivity failure. The exact 50/50 split in Prediction 1 is a geometric artifact
+of this collapse, not evidence of balanced, theory-neutral errors.
+
+**Verdict:** a genuine negative result on all three pre-registered predictions, but one
+that surfaces a more important finding than any of them would have individually: this
+model's apparent interventional competence on its hardest, most genuinely confounded
+topology may not be real competence at all — Phase A's pooled-topology accuracy logging
+and Phase B's patching-based transfer test were both structured in ways that couldn't have
+caught this, since neither directly checked whether the *un-ablated* model's confounded
+answers were correct in the interventional sense.
+
+**New caveat for Phase B, surfaced by this analysis:** Phase B's 90–98% cross-topology
+transfer numbers measured mechanistic *consistency* (does patching restore the clean run's
+answer), not *correctness* (was the clean run's answer actually right). Given Phase C's
+finding, it's possible Phase B's "clean" runs were themselves confidently answering with
+the associational shortcut rather than the correct interventional answer — patching can
+restore a consistent wrong answer as easily as a correct one. This doesn't invalidate
+Phase B's localization/transfer claim, but it means that claim should not be read as
+evidence the circuit computes correct answers.
+
+**Full write-up:** `results/phase_c_conclusion.md`. **Circuit's revised characterization**
+going forward: not "the intervention-vs-association circuit" (tested, not supported) but
+"a circuit whose ablation collapses input-sensitivity on confounded-topology questions."
+
+---
+
+## 5. Cross-Cutting Deductions (things learned across all four phases)
 
 1. **Small-model, small-batch RL settings are noisy enough that "phase
    transition" claims need real skepticism.** Phase A's per-iteration
@@ -194,13 +255,18 @@ MLP layers 7, 9, 10, 11; iteration-135 checkpoint.
    trusting downstream "no transition detected" conclusions.
 
 4. **Mechanistic localization can be real even when the behavioral training
-   signal (Phase A) is messy.** Despite Phase A's noisy, only-partially-
-   supported emergence story, Phase B found an unambiguous, sparse, strongly
-   transferring circuit on the *same* checkpoint. This is itself informative:
-   whatever interventional competence this model has — however noisily or
-   gradually it arrived — is concentrated in a small, identifiable,
-   topology-general mechanism. The mechanistic finding does not depend on
-   Phase A's emergence story having been clean.
+   signal (Phase A) is messy — but "localized" and "correct" are different
+   claims, and it's easy to conflate them.** Phase B found an unambiguous,
+   sparse, strongly transferring circuit on the Phase A checkpoint despite
+   Phase A's noisy emergence story. That finding stands on its own. But
+   Phase C revealed that on the one topology where it could actually check,
+   the *un-ablated* model's "correct-looking" behavior was consistently
+   wrong in a specific way (matching the associational shortcut, not true
+   intervention). Phase B's patching only ever tested whether activations
+   could be moved around consistently — never whether the answer being
+   moved around was right. The lesson: a strong localization/transfer result
+   is evidence of *a* mechanism, not evidence that the mechanism is doing
+   the *correct* computation — those need to be checked separately.
 
 5. **Infrastructure bugs are the main practical risk in this kind of pipeline,
    and several were real, not hypothetical.** Across the three phases: a
@@ -223,9 +289,34 @@ MLP layers 7, 9, 10, 11; iteration-135 checkpoint.
    run. Worth continuing as a habit in later phases when time allows, not just
    treating Colab as a speed hack.
 
+7. **Pre-registration earned its keep in Phase C, and not in the way it's
+   usually pitched.** The textbook value of pre-registration is preventing
+   post-hoc reshaping of predictions to match messy results. That happened
+   here too (all three predictions failed, honestly reported as failures,
+   not quietly redefined). But the more concrete value was structural: the
+   pre-registration's exact test-set specification forced the empty-test-set
+   problem to surface *before* any ablation ran, at a point where fixing it
+   was clearly a data-construction issue rather than a suspicious
+   after-the-fact adjustment. Without a written, dated specification to
+   check the actual test set against, it would have been much easier to
+   quietly adjust the topology selection *after* seeing a weak ablation
+   result and lose the ability to tell whether that adjustment was principled
+   or convenient.
+
+8. **Aggregate accuracy numbers can hide the entire story — inspecting raw
+   per-example outputs mattered as much here as in the earlier bug catches.**
+   Phase C's pass/fail summary alone ("all three predictions failed") reads
+   as a fairly generic negative result. Looking at the actual predicted
+   values revealed a specific, interpretable pattern (baseline associational
+   collapse, then ablation-induced output collapse to a constant) that
+   changes what the negative result *means*. This is the same lesson as
+   deduction 5 above (bugs caught by looking at real outputs), extended from
+   "catching mistakes" to "extracting the actual finding" — aggregate
+   metrics are a starting point for investigation, not a stopping point.
+
 ---
 
-## 5. What's Still Open Going Into Phase C
+## 6. What's Still Open Going Into Phase D
 
 - Phase A's counterfactual-rung jump (iteration 86) has no known mechanistic
   correlate yet — Phase B only investigated the *intervention* circuit, per
@@ -237,6 +328,18 @@ MLP layers 7, 9, 10, 11; iteration-135 checkpoint.
   collider's slightly lower transfer score (0.904 vs. ~0.97–0.98 elsewhere)
   cannot yet be cleanly attributed to circuit-specificity vs. collider
   questions simply being intrinsically harder for the model in general.
+- **New, higher-priority open question from Phase C:** is the model's 0%
+  un-ablated interventional accuracy specific to the confounded topology, or
+  does it reflect a broader associational-shortcut problem across the other
+  three topologies too (which couldn't be tested for directional bias, but
+  COULD be checked for plain correctness)? This should probably be resolved
+  before Phase D, since Phase D's own hypothesis (an implicit/explicit
+  prompting gap that closes post-transition) implicitly assumes the model
+  has some real interventional competence to lose the gap toward.
+- Phase C's associational-question ablation effect (0.85→1.0 recalibration)
+  is not yet understood mechanistically — it wasn't the focus of Phase C's
+  predictions, but it's a real, measured effect worth a closer look if time
+  allows.
 - No ablation-error-signature testing (RQ3) has been done yet — this is
   Phase C's task, using the same L7H5/L10H7/L8H11 + MLP-7/9/10/11 circuit and
   iteration-135 checkpoint identified here.

@@ -181,7 +181,26 @@ directional-bias claim itself is still fully testable and still meaningful.
 
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
-*(empty — to be filled in after Phase C is run)*
+**All three predictions NOT SUPPORTED, but with an important finding underneath.** Full
+write-up in `results/phase_c_conclusion.md`; summary:
+
+- P1 (directional bias): exactly 50/50 split, p=0.540. Not supported.
+- P2 (selectivity): associational accuracy dropped 98%->79% (19pp, exceeds 10pp tolerance).
+  Not supported.
+- P3 (asymmetry): interventional accuracy was 0% both before AND after ablation (floor
+  effect -- no drop to measure). Not supported.
+- **The real finding, discovered by inspecting raw predictions rather than trusting the
+  pass/fail summary:** the UN-ablated model was already at 0% interventional accuracy on
+  confounded-topology questions, answering in the associational direction 100% of the time
+  before any ablation -- Pearl's predicted failure mode was already the baseline, leaving
+  no room for Prediction 1 to detect a *shift*. Ablation didn't push further toward
+  association; it collapsed the model to a single constant output (0.10) for all 100
+  interventional questions, while associational-question outputs remained bimodal but
+  recalibrated (0.85->1.0). This is genuine information about the circuit (it maintains
+  input-sensitivity, not correct do-calculus) but not what P1-P3 were designed to detect.
+- New caveat surfaced for Phase B: its transfer numbers show mechanistic consistency, not
+  correctness -- the "clean" runs it patched from may themselves have been confidently
+  wrong. Flagged for any future write-up.
 
 ---
 

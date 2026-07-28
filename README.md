@@ -81,7 +81,17 @@ random-circuit baseline (25 random circuits averaged 26.7% vs. the candidate's 9
 percentile). Caveat: the circuit was identified from a batch spanning all topologies at once,
 not a strict leave-one-topology-out test — listed as a follow-up.
 
-Phases C–F have not started; hypotheses are pre-registered in
+**Phase C: complete — all three pre-registered predictions not supported, with an
+important finding underneath.** See [results/phase_c_conclusion.md](results/phase_c_conclusion.md).
+Predictions pre-registered and pushed (commit `e2ae1c7`) before any experiment code was
+written. The un-ablated model turned out to already be at 0% interventional accuracy on
+the one topology where the directional test was even meaningful (confounded), already
+answering in the associational direction 100% of the time — leaving no room for ablation
+to show a *shift*. Ablation instead collapsed the model to a constant output, revealing
+the circuit maintains input-sensitivity rather than correct do-calculus. Also surfaces a
+caveat for Phase B's transfer claim (mechanistic consistency ≠ correctness).
+
+Phases D–F have not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
 
 ## Project Context
