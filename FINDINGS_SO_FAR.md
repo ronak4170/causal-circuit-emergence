@@ -265,14 +265,34 @@ exactly the "two independent thermometers" logic the phase was designed around -
 converging on a genuine incapacity rather than the hoped-for capacity-that-internalizes
 story.
 
-**Disclosed confound, not resolved:** explicit prompts average ~1.8x longer than implicit
-ones (245 vs. 137 characters); length was not controlled for (no filler-padding), so this
-remains a real, uncontrolled alternative explanation for the handful of apparent
-(non-significant) explicit advantages observed.
+**Two follow-up checks (run after the user asked how to strengthen this result) resolved
+the main open questions:**
+
+- **Length confound, resolved:** a length-matched, content-free `neutral_control` condition
+  (246 vs. explicit's 245 mean characters) was tested across all 10 checkpoints.
+  It matched `implicit` **exactly** at every single checkpoint, including the two where
+  `explicit` had diverged — cleanly attributing both real effects to scaffolding content,
+  not prompt length.
+- **"Is chain/fork/collider's accuracy genuine?" — yes.** A discrimination test (n=40/
+  topology at the final checkpoint) checked whether the model's predictions actually track
+  the true causal effect and correctly flip direction with `do_value`, rather than just
+  landing within tolerance of a memorized constant. Correlation between predicted and true
+  answers was 0.985–0.998, with correct directional discrimination in all three
+  topologies. Caveat: predictions are coarse/binary-ish (two clustered output values per
+  topology), not fully graded probability estimates — real competence, but not
+  fine-grained continuous reasoning.
+
+**This sharpens the overall picture substantially.** It is not "the model has no causal
+competence" — Follow-up 2 rules that out for unconfounded topologies. It is specifically:
+**genuine, verified, direction-correct competence on chain/fork/collider, and a complete,
+floor-level absence of that same competence on confounded** — the one topology that
+actually requires distinguishing intervention from association. This is a materially more
+informative conclusion than the original Phase D write-up alone supported.
 
 **Full write-up:** `results/phase_d_conclusion.md`. **Cross-phase integration figure:**
 `results/cross_phase_integration.png` (Phase A accuracy + LLC + Phase D gap, one shared
-training-iteration axis).
+training-iteration axis). **Discrimination test scatter:**
+`results/phase_d_discrimination_scatter.png`.
 
 ---
 
@@ -408,28 +428,40 @@ training-iteration axis).
   collider's slightly lower transfer score (0.904 vs. ~0.97–0.98 elsewhere)
   cannot yet be cleanly attributed to circuit-specificity vs. collider
   questions simply being intrinsically harder for the model in general.
-- Is the model's 0% interventional competence specific to confounded, or does
-  it reflect a broader associational-shortcut problem on chain/fork/collider
-  too? Those topologies can't test *directional* bias (no real
-  association/intervention divergence, by Phase A's design), but plain
-  correctness on them was never directly audited either — Phase D measured
-  accuracy on them, but high accuracy there doesn't distinguish "genuine
-  reasoning" from "got the shared right-answer-either-way number by luck or
-  shortcut," since assoc and interv answers coincide for those topologies.
+- ~~Is the model's 0% interventional competence specific to confounded, or a
+  broader shortcut on chain/fork/collider too?~~ **Resolved:** a
+  discrimination test confirmed genuine, direction-correct (if coarse)
+  competence on chain/fork/collider specifically (r=0.985–0.998); the floor
+  is specific to confounded.
+- ~~Phase D's length confound was disclosed but not resolved.~~ **Resolved:**
+  a length-matched neutral control matched `implicit` exactly at all 10
+  checkpoints; both real effects found are attributable to scaffolding
+  content, not length.
+- Phase A's counterfactual-rung jump (iteration 86) has no known mechanistic
+  correlate yet — Phase B only investigated the *intervention* circuit, per
+  RQ2's scope. Whether counterfactual reasoning shares components with the
+  intervention circuit found here is untested.
+- Phase B's leave-one-topology-out follow-up (a stricter transfer test) has
+  not been run.
+- Phase B did not measure per-topology baseline (unpatched) accuracy, so
+  collider's slightly lower transfer score (0.904 vs. ~0.97–0.98 elsewhere)
+  cannot yet be cleanly attributed to circuit-specificity vs. collider
+  questions simply being intrinsically harder for the model in general.
 - Phase C's associational-question ablation effect (0.85→1.0 recalibration)
   is not yet understood mechanistically — still an open, real, measured
   effect worth a closer look if time allows.
 - The one statistically real Phase D effect (chain, iteration 90: scaffolding
-  driving accuracy from 53% to 0%) has not been replicated. Worth a rerun
-  with a different seed before treating it as more than a single-checkpoint
-  curiosity.
-- Phase D's length confound (explicit prompts ~1.8x longer) was disclosed but
-  not resolved — a length-matched control condition would strengthen any
-  future claim built on Phase D's few marginal (non-significant) apparent
-  gaps.
-- Phase E's recursive-training design should account for the now
-  twice-confirmed (Phase C + Phase D) finding that confounded-topology
-  interventional competence is entirely absent to begin with — tracking its
-  "degradation" under recursive training would be tracking degradation of
-  something that was never there, which needs to be framed correctly rather
-  than silently assumed away.
+  driving accuracy from 53% to 0%) has not been replicated across a
+  different seed — still worth doing before treating it as more than a
+  single-checkpoint curiosity, even though length is now ruled out as the
+  cause.
+- The discrimination test's "coarse, binary-ish output" observation (two
+  clustered values per topology rather than graded probability estimates)
+  is itself worth investigating — is this a general property of this
+  model's percentage-answering behavior, or specific to unconfounded
+  intervention questions?
+- Phase E's recursive-training design should track chain/fork/collider's
+  *genuine* competence and confounded's *already-absent* competence as two
+  distinct baselines, not one undifferentiated "interventional competence"
+  — the sharpened Phase D picture makes this distinction available for the
+  first time.

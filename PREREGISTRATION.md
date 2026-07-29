@@ -237,6 +237,17 @@ close.** Full write-up in `results/phase_d_conclusion.md`; summary:
   chars); length was not controlled for.
 - Cross-phase integration figure: `results/cross_phase_integration.png`.
 
+**Follow-up analyses (after the user asked how to strengthen this result):**
+- Length confound resolved: a length-matched, content-free `neutral_control` condition was
+  identical to `implicit` at all 10 checkpoints, including the two where `explicit`
+  diverged -- confirming both real effects were about scaffolding content, not length.
+- Chain/fork/collider's high accuracy verified as genuine (not memorized constants): a
+  discrimination test (n=40/topology, checkpoint 135) found 0.985-0.998 correlation between
+  predicted and true answers, with correct directional sensitivity to `do_value` in all
+  three topologies -- real, if coarse/binary-ish, causal competence. This sharpens the
+  picture: the model has genuine competence on unconfounded topologies and a complete
+  floor specifically on confounded, not uniform incompetence everywhere.
+
 ---
 
 ## Phase E — RQ5: Robustness/Collapse

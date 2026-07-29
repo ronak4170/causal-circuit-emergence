@@ -102,24 +102,73 @@ readings can claim: whatever the model learned, it did not include real do-calcu
 reasoning for confounded structures, and this is now supported by two independent methods,
 not one.
 
-## What would strengthen this
+## Follow-up 1: length confound, resolved (`src/phase_d_evaluate_control.py`)
 
-1. **Control for the length confound directly** -- either pad implicit prompts with neutral
-   filler to match explicit length, or run a length-matched-but-content-free "explicit"
-   control (same length, no causal-reasoning content) to isolate content from length.
-2. **Investigate the one real effect (chain, iteration 90) further** -- is this a
-   genuine, reproducible "scaffolding actively confuses the model at certain training
-   points" phenomenon, or a one-off artifact of that specific checkpoint's idiosyncrasies?
-   A replication run (different seed) would help distinguish these, following the same
-   cross-environment-replication practice used successfully in Phase A.
-3. **Larger n per topology** -- n=15 gives wide Wilson intervals; doubling or tripling it
-   would sharpen the ability to detect real, smaller gaps if they exist.
+A third condition was added: `neutral_control` -- the implicit question padded with
+content-free filler text to match each pair's own mean explicit-variant length (246 vs.
+245 characters, essentially exact). Re-run across all 10 checkpoints.
+
+**Result: length never mattered, anywhere.** `neutral_control` accuracy was **identical**
+to `implicit` accuracy at every single one of the 10 checkpoints, for every topology,
+including at the two checkpoints where `explicit` had previously diverged (fork at
+iteration 75: implicit/neutral_control both 0.67, explicit 0.33; chain at iteration 90:
+implicit/neutral_control both 0.53, explicit 0.00). This cleanly attributes both of those
+effects to the scaffolding's *causal-reasoning content* specifically, not to the extra
+length -- ruling out the length confound as an alternative explanation for the one
+statistically real effect this phase found. Full results:
+`results/phase_d_control_results.pkl`.
+
+## Follow-up 2: does chain/fork/collider's accuracy reflect genuine reasoning?
+(`src/phase_d_discrimination_test.py`)
+
+Since association and intervention answers coincide for these topologies by design, high
+tolerance-accuracy alone couldn't rule out "the model outputs a lucky/memorized constant."
+Tested directly at checkpoint 135 (n=40/topology, fresh questions varying `do_value`):
+correlation between the model's predicted probability and the true answer, and whether the
+model's predictions correctly shift direction between `do_value=True` and `do_value=False`
+groups (a true constant-output model would fail this even if individually "lucky" answers
+landed within tolerance).
+
+**Result: strong, genuine discrimination.** Correlation was 0.985 (chain), 0.989 (fork),
+0.998 (collider) -- and in all three, the model's mean prediction correctly shifted in the
+same direction as the true answer between `do_value` groups (e.g. chain: predicted 0.85 vs.
+0.10 for True vs. False, matching the true answer's own 0.85-ish vs. 0.10-ish split). See
+`results/phase_d_discrimination_scatter.png`. **This rules out the "memorized constant"
+concern**: the model genuinely tracks which direction the intervention was applied, for
+unconfounded topologies.
+
+**One caveat worth flagging precisely:** the model's predictions are not continuous --
+each topology shows exactly two clustered output values (e.g. chain: ~0.85 or ~0.10), not
+graded probability estimates matching the true answer's finer variation within each
+`do_value` group. The high correlation partly reflects that the true answers are also
+fairly tightly clustered within each group, so a coarse binary-ish classifier can achieve
+high linear correlation without doing graded probability estimation. The honest
+characterization: the model has learned a genuine, input-sensitive **binary discrimination**
+of the intervention's direction for unconfounded topologies -- real competence, but coarser
+than full continuous causal inference.
+
+## Revised overall picture
+
+Combining both follow-ups with the original Phase D result: **the model has real,
+verified, direction-correct (if coarse) causal competence specifically on the unconfounded
+topologies (chain, fork, collider) it was trained on -- and a complete, floor-level absence
+of that same competence on the one topology (confounded) that actually requires
+distinguishing intervention from association.** This is a sharper, more informative
+picture than the original Phase D write-up could support alone: it is not that the model
+"has no causal competence" in general (Follow-up 2 rules that out for the unconfounded
+case), and it is not that Phase D's apparent effects were artifacts of prompt length
+(Follow-up 1 rules that out too) -- it is specifically that whatever mechanism produces
+correct unconfounded-topology answers does not extend to the confounded case, exactly
+where Pearl's do-calculus distinction actually bites.
 
 ## Status for Phase E
 
-Phase E (recursive training) re-uses Phase C's ablation-signature procedure. Phase D's
-findings don't change what Phase E should test, but they reinforce the same caution Phase
-C raised: whatever gets tracked across recursive generations should be checked for whether
-it reflects genuine capability or a pre-existing shortcut, on confounded-topology
-questions specifically, given both Phase C and Phase D now agree that shortcut is
-already the model's total behavior there.
+Phase E (recursive training) re-uses Phase C's ablation-signature procedure. The revised
+picture from the two follow-ups sharpens what Phase E should track: there are now two
+verified, distinct baselines going in -- genuine (if coarse, binary-ish) causal
+discrimination on chain/fork/collider, and a complete floor on confounded -- rather than
+one uniform "shortcut everywhere" story. Phase E should track whether recursive training
+degrades the *genuine* unconfounded competence (a real capability that could be lost) at a
+different rate than it affects the *already-absent* confounded competence (which has
+nothing left to lose), rather than treating "interventional competence" as a single
+undifferentiated thing across topologies.

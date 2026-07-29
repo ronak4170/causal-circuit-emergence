@@ -97,7 +97,12 @@ Across 10 checkpoints × 4 topologies, only 1 of 40 cells showed a statistically
 implicit/explicit gap (and it was negative — scaffolding hurt, not helped). Confounded
 topology — the only one diagnostic of real intervention reasoning — scored exactly 0% for
 both prompt styles at every checkpoint, matching Phase C's ablation finding via a fully
-independent, non-mechanistic method.
+independent, non-mechanistic method. Two follow-up checks sharpened this further: a
+length-matched control ruled out prompt length as the explanation for the one real effect
+found, and a discrimination test confirmed chain/fork/collider's accuracy reflects genuine
+(if coarse) causal competence (r=0.99+) rather than memorized constants — so the picture is
+not "no causal competence anywhere" but "genuine competence on unconfounded topologies,
+complete floor on confounded specifically."
 
 Phases E–F have not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
