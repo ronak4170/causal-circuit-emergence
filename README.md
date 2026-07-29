@@ -91,7 +91,15 @@ to show a *shift*. Ablation instead collapsed the model to a constant output, re
 the circuit maintains input-sensitivity rather than correct do-calculus. Also surfaces a
 caveat for Phase B's transfer claim (mechanistic consistency ≠ correctness).
 
-Phases D–F have not started; hypotheses are pre-registered in
+**Phase D: complete — effectively falsified (no meaningful gap existed to close), which
+independently corroborates Phase C.** See [results/phase_d_conclusion.md](results/phase_d_conclusion.md).
+Across 10 checkpoints × 4 topologies, only 1 of 40 cells showed a statistically real
+implicit/explicit gap (and it was negative — scaffolding hurt, not helped). Confounded
+topology — the only one diagnostic of real intervention reasoning — scored exactly 0% for
+both prompt styles at every checkpoint, matching Phase C's ablation finding via a fully
+independent, non-mechanistic method.
+
+Phases E–F have not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
 
 ## Project Context

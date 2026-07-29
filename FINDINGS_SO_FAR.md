@@ -1,11 +1,11 @@
-# Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C)
+# Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C, Phase D)
 
-**Last updated:** after Phase C completion, before Phase D.
+**Last updated:** after Phase D completion, before Phase E.
 
-This document synthesizes what has actually been found across the four completed
+This document synthesizes what has actually been found across the five completed
 phases, separated from the phase-by-phase working notes in `docs/phase0_setup.md`,
-`results/phase_a_conclusion.md`, `results/phase_b_conclusion.md`, and
-`results/phase_c_conclusion.md`. Read those for
+`results/phase_a_conclusion.md`, `results/phase_b_conclusion.md`,
+`results/phase_c_conclusion.md`, and `results/phase_d_conclusion.md`. Read those for
 full methodological detail; this file is the consolidated "what do we actually know
 now" summary.
 
@@ -227,7 +227,56 @@ going forward: not "the intervention-vs-association circuit" (tested, not suppor
 
 ---
 
-## 5. Cross-Cutting Deductions (things learned across all four phases)
+## 5. Phase D — RQ4: Behavioral Correlate (effectively falsified — no gap existed to
+close, independently corroborating Phase C)
+
+**Setup:** matched implicit/explicit intervention prompt pairs (1 implicit + 3 explicit
+do-calculus-scaffolding variants), built from each topology's actual trained variable pair
+(applying the same in-distribution lesson Phase C learned the hard way). Evaluated at all
+10 available Phase A checkpoints, n=15 questions/topology, with Wilson-score confidence
+intervals to distinguish real gaps from small-sample noise.
+
+**Almost none of the apparent gaps were statistically real.** Of 40 (checkpoint x
+topology) cells, only 1 -- chain at iteration 90 -- had non-overlapping confidence
+intervals. Every other apparent gap, including some as large as 33-53 percentage points in
+raw terms, had overlapping CIs given the small sample size and cannot be distinguished from
+noise. This is itself a useful methodological point: eyeballing raw point-estimate
+"gaps" without confidence intervals would have produced a much noisier, more
+overinterpreted-looking story.
+
+**The one statistically real effect was the opposite of the hypothesis: scaffolding hurt.**
+At iteration 90, explicit prompts drove chain accuracy from 53% down to 0% -- exactly the
+"scaffolding may confuse the model" failure mode the phase's own design guide flagged as
+possible, observed directly rather than merely anticipated.
+
+**Confounded topology -- the only topology diagnostic of genuine intervention-vs-
+association reasoning -- scored exactly 0% for BOTH implicit and explicit prompts, at
+every single checkpoint, with zero variance.** Not even the most heavily scaffolded
+variant (explicit do-operator notation, written out directly: `P(target | do(var=val))`)
+ever rescued a single question. This is a floor, not parity from competence.
+
+**This independently corroborates Phase C's central finding via a completely different
+method.** Phase C ablated the model's internals and found 0% un-ablated interventional
+accuracy on confounded questions. Phase D never touches the model's internals at all --
+only the prompt -- and finds the identical 0% floor, regardless of how much explicit
+causal-reasoning scaffolding is provided, at every point across training. Two independent
+probes (one mechanistic, one purely behavioral) converge on the same limitation. This is
+exactly the "two independent thermometers" logic the phase was designed around -- just
+converging on a genuine incapacity rather than the hoped-for capacity-that-internalizes
+story.
+
+**Disclosed confound, not resolved:** explicit prompts average ~1.8x longer than implicit
+ones (245 vs. 137 characters); length was not controlled for (no filler-padding), so this
+remains a real, uncontrolled alternative explanation for the handful of apparent
+(non-significant) explicit advantages observed.
+
+**Full write-up:** `results/phase_d_conclusion.md`. **Cross-phase integration figure:**
+`results/cross_phase_integration.png` (Phase A accuracy + LLC + Phase D gap, one shared
+training-iteration axis).
+
+---
+
+## 6. Cross-Cutting Deductions (things learned across all four phases)
 
 1. **Small-model, small-batch RL settings are noisy enough that "phase
    transition" claims need real skepticism.** Phase A's per-iteration
@@ -314,9 +363,40 @@ going forward: not "the intervention-vs-association circuit" (tested, not suppor
    "catching mistakes" to "extracting the actual finding" — aggregate
    metrics are a starting point for investigation, not a stopping point.
 
+9. **Confidence intervals, not point estimates, should gate every claim about
+   a "gap" or "difference" on small samples — Phase D would have told a much
+   noisier, more overinterpreted story without them.** With n=15/topology/
+   checkpoint, raw point-estimate gaps as large as 33-53 percentage points
+   turned out to be statistically indistinguishable from noise once Wilson
+   intervals were computed — only 1 of 40 (checkpoint, topology) cells
+   survived. A version of this analysis that plotted and interpreted raw
+   gaps alone (easy to do, and what the starter code's own plotting
+   suggestion would have produced by default) would have read as "the gap
+   fluctuates wildly and unpredictably across training," an much weaker and
+   more confusing finding than "there is essentially no real gap anywhere
+   except one isolated event, and the diagnostic topology is at a floor."
+   Small-n behavioral evaluations are exactly where this check matters most,
+   and it would have been easy to skip.
+
+10. **Two independent probes converging on the same limitation is strong
+    evidence — even when the limitation is a negative finding neither probe
+    was originally designed to highlight.** Phase C's ablation (mechanistic)
+    and Phase D's prompting (behavioral) shared no methodology, no code path,
+    and no data in common, yet arrived at the identical conclusion: 0%
+    genuine competence on confounded-topology intervention questions,
+    unmovable by either circuit removal or prompt scaffolding. Neither phase
+    set out to prove this specifically (Phase C was testing a directional
+    ablation signature; Phase D was testing a training-time gap-closing
+    story) — the convergence emerged from honestly reporting what both
+    experiments actually showed, rather than from designing a single
+    experiment to demonstrate it. That's a stronger form of evidence than
+    either phase could have produced alone, and it came from following the
+    pre-registration/inspect-raw-outputs discipline consistently rather than
+    from a specifically-targeted confirmatory test.
+
 ---
 
-## 6. What's Still Open Going Into Phase D
+## 7. What's Still Open Going Into Phase E
 
 - Phase A's counterfactual-rung jump (iteration 86) has no known mechanistic
   correlate yet — Phase B only investigated the *intervention* circuit, per
@@ -328,18 +408,28 @@ going forward: not "the intervention-vs-association circuit" (tested, not suppor
   collider's slightly lower transfer score (0.904 vs. ~0.97–0.98 elsewhere)
   cannot yet be cleanly attributed to circuit-specificity vs. collider
   questions simply being intrinsically harder for the model in general.
-- **New, higher-priority open question from Phase C:** is the model's 0%
-  un-ablated interventional accuracy specific to the confounded topology, or
-  does it reflect a broader associational-shortcut problem across the other
-  three topologies too (which couldn't be tested for directional bias, but
-  COULD be checked for plain correctness)? This should probably be resolved
-  before Phase D, since Phase D's own hypothesis (an implicit/explicit
-  prompting gap that closes post-transition) implicitly assumes the model
-  has some real interventional competence to lose the gap toward.
+- Is the model's 0% interventional competence specific to confounded, or does
+  it reflect a broader associational-shortcut problem on chain/fork/collider
+  too? Those topologies can't test *directional* bias (no real
+  association/intervention divergence, by Phase A's design), but plain
+  correctness on them was never directly audited either — Phase D measured
+  accuracy on them, but high accuracy there doesn't distinguish "genuine
+  reasoning" from "got the shared right-answer-either-way number by luck or
+  shortcut," since assoc and interv answers coincide for those topologies.
 - Phase C's associational-question ablation effect (0.85→1.0 recalibration)
-  is not yet understood mechanistically — it wasn't the focus of Phase C's
-  predictions, but it's a real, measured effect worth a closer look if time
-  allows.
-- No ablation-error-signature testing (RQ3) has been done yet — this is
-  Phase C's task, using the same L7H5/L10H7/L8H11 + MLP-7/9/10/11 circuit and
-  iteration-135 checkpoint identified here.
+  is not yet understood mechanistically — still an open, real, measured
+  effect worth a closer look if time allows.
+- The one statistically real Phase D effect (chain, iteration 90: scaffolding
+  driving accuracy from 53% to 0%) has not been replicated. Worth a rerun
+  with a different seed before treating it as more than a single-checkpoint
+  curiosity.
+- Phase D's length confound (explicit prompts ~1.8x longer) was disclosed but
+  not resolved — a length-matched control condition would strengthen any
+  future claim built on Phase D's few marginal (non-significant) apparent
+  gaps.
+- Phase E's recursive-training design should account for the now
+  twice-confirmed (Phase C + Phase D) finding that confounded-topology
+  interventional competence is entirely absent to begin with — tracking its
+  "degradation" under recursive training would be tracking degradation of
+  something that was never there, which needs to be framed correctly rather
+  than silently assumed away.

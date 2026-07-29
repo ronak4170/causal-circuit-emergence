@@ -215,7 +215,27 @@ uncorrelated with (or absent at) the RQ1 LLC transition and RQ2/RQ3 circuit sign
 
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
-*(empty — to be filled in after Phase D is run)*
+**Effectively falsified, but for an informative reason: no meaningful gap existed to
+close.** Full write-up in `results/phase_d_conclusion.md`; summary:
+
+- Evaluated matched implicit/explicit prompt pairs (in-distribution variable pairs, per the
+  Phase C lesson) across all 10 Phase A checkpoints, n=15/topology, with Wilson-score CIs.
+- Of 40 (checkpoint x topology) cells, only 1 (chain, iteration 90) showed a
+  statistically real gap -- and it was a large NEGATIVE gap (explicit scaffolding drove
+  accuracy from 53% to 0%), not the hypothesized positive one. All other apparent gaps,
+  some as large as 33-53pp in raw terms, had overlapping confidence intervals (n=15 is
+  small) and are not distinguishable from noise.
+- Confounded topology -- the only topology where a real gap would be diagnostic of
+  intervention-vs-association reasoning -- showed exactly 0% accuracy for BOTH implicit
+  and explicit prompts (including a variant with explicit do-operator notation) at all 10
+  checkpoints. This is a floor, not parity from competence.
+- This independently corroborates Phase C's central finding via a completely different,
+  purely behavioral method (no ablation, only prompt variation): the model has no
+  confounded-topology interventional competence for any prompt style to surface, at any
+  point in training.
+- Disclosed confound: explicit prompts average ~1.8x longer than implicit (245 vs. 137
+  chars); length was not controlled for.
+- Cross-phase integration figure: `results/cross_phase_integration.png`.
 
 ---
 
