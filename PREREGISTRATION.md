@@ -260,6 +260,79 @@ than associational competence.
 degrade at the same rate as (or slower than) associational accuracy under recursive
 self-training.
 
+### Pre-registered predictions and design (written BEFORE any Phase E experiment code exists)
+
+**Adapting to what Phases C/D actually established, disclosed up front:** the original
+hypothesis assumes a clean baseline "RQ3 ablation signature" (a directional
+associational-bias fraction) to track degradation of. Phase C found this signature did NOT
+exist at baseline on confounded topology (the only topology with real association/
+intervention divergence) -- ablation there collapsed the model to a constant rather than
+producing a directional shift, and confounded's un-ablated interventional accuracy was
+already 0%. There is no clean signature to "degrade further." The predictions below are
+adapted accordingly, using what Phase D additionally established: genuine, verified,
+direction-correct causal competence exists on chain/fork/collider (r=0.985-0.998,
+discrimination test), while confounded is a pre-existing floor. Phase E tracks the former
+(real competence that COULD degrade) and separately monitors the latter (to see if a floor
+can get "more confidently wrong" without changing its 0% accuracy).
+
+**Design correction to the starter pseudocode, disclosed:** the starter code's Conditions A
+and D pseudocode both call identical rft_iteration() on identical fresh-oracle batches
+every iteration -- as literally written, they would not differ mechanistically at all,
+defeating the entire point of isolating "recursion" as the causal factor. Corrected design:
+- **Condition A (vanilla recursive):** generation g's ENTIRE training corpus is a FIXED
+  snapshot of generation (g-1)'s own oracle-filtered-correct rollouts on a batch of
+  questions generated ONCE per generation (not resampled each fine-tuning step). No fresh
+  oracle questions enter after the initial batch is drawn.
+- **Condition B (real-data-anchored):** same as A, but ~7.5% of each generation's training
+  corpus is freshly oracle-labeled examples (real target answers, not model-generated).
+- **Condition C (diversity-filtered):** same as A, but caps accepted rollouts per
+  (topology, rung) bucket before fine-tuning, to prevent the corpus from being dominated by
+  whichever bucket the model finds easiest to generate correct answers for.
+- **Condition D (no-recursion control):** continues Phase A's ORIGINAL training loop
+  exactly -- fresh, newly-sampled oracle question batches every single iteration, same as
+  `phase_a_main.py` -- for the same number of gradient updates as condition A's
+  corresponding generation used. The model's own generations are still filtered for
+  correctness (as in Phase A), but the *question pool* never stops refreshing with new
+  oracle-generated content, so there is no generation-to-generation self-referential corpus.
+
+**Scale:** starting from the iteration-135 checkpoint. 3 generations per condition (not 4,
+given compute constraints already observed in Phases A-D on this hardware).
+
+**Prediction 1 (adapted from the original "circuit vs. raw accuracy" claim).** In Condition
+A, chain/fork/collider's discrimination-test correlation (predicted vs. true answer,
+Phase D's method) degrades faster across generations 0->3 than Condition D's does. "Faster"
+means: Condition A's correlation drop (gen 0 to gen 3) is at least 2x Condition D's drop,
+with non-overlapping bootstrap CIs on the gen-3 values.
+
+**Prediction 2 (Seddik et al. replication).** Condition B's discrimination-correlation drop
+(gen 0 to gen 3) is smaller than Condition A's -- real-data anchoring measurably slows
+degradation relative to vanilla recursion.
+
+**Prediction 3 (standard collapse replication).** Output diversity (std. dev. of the
+model's generated numeric answer across 10 repeated samples of the same prompt, temperature
+0.8) shrinks in Condition A over generations, and shrinks less in Conditions B and D.
+
+**Also tracked, not pre-registered as a pass/fail prediction (since no clean baseline
+exists to test degradation against):** whether confounded-topology's ablation-under-mean-
+ablation behavior (Phase C's constant-collapse pattern) changes qualitatively across
+generations in Condition A -- e.g. collapses to a different constant, or the
+associational-question recalibration effect (0.85->1.0 in Phase C) shifts further.
+
+**Interpretation table:**
+- All three predictions supported -> recursive training specifically damages verified
+  causal competence faster than continued non-recursive training, and real-data anchoring
+  mitigates it -- the clean, publishable Pattern 1 result.
+- P1 fails, but Condition A still degrades no faster than D -> recursion isn't the
+  differential factor; further training in general drifts the model (Pattern 4 in the
+  original spec).
+- No degradation in any condition over 3 generations -> either genuinely robust at this
+  scale/horizon, or 3 generations is too short to see an effect (Pattern 3) -- would need
+  more generations to distinguish, noted as a limitation rather than extended given time
+  constraints already flagged for this phase.
+
+This pre-registration is committed and pushed to public GitHub BEFORE any Phase E
+experiment code is written, per the same discipline used in Phase C.
+
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
 *(empty — to be filled in after Phase E is run)*
