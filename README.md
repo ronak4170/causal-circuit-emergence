@@ -104,7 +104,19 @@ found, and a discrimination test confirmed chain/fork/collider's accuracy reflec
 not "no causal competence anywhere" but "genuine competence on unconfounded topologies,
 complete floor on confounded specifically."
 
-Phases E–F have not started; hypotheses are pre-registered in
+**Phase E: complete — not supported, in the opposite direction than predicted.** See
+[results/phase_e_conclusion.md](results/phase_e_conclusion.md). Across 3-4 generations of
+recursive RL fine-tuning starting from the iteration-135 checkpoint, all three recursive
+conditions (vanilla, real-data-anchored, diversity-filtered) showed **zero** measurable
+degradation in genuine causal competence — while the non-recursive control condition
+collapsed to context-insensitive constant outputs within 2 generations. Confirmed genuine
+via direct token-level diagnostics, not just aggregate correlation. A disclosed
+optimization-dynamics confound (batch size/update frequency differed between the
+non-recursive control and the recursive conditions, not just data source) means this can't
+yet cleanly isolate "recursion" as the causal factor — flagged as the natural next
+follow-up rather than overclaimed.
+
+Phase F has not started; hypotheses are pre-registered in
 [PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
 
 ## Project Context

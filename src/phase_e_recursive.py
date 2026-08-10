@@ -153,8 +153,12 @@ def run_condition(condition, n_generations=3):
         save_checkpoint(model, condition, gen)
         log.append({"generation": gen, **info})
         print(f"Condition {condition} generation {gen} complete: {info}")
+        # Save incrementally after each generation, not just at the end -- an
+        # earlier Phase E run lost condition D's entire log to a session
+        # interruption because this only wrote once, after the full loop
+        # finished. Same lesson as Phase A's disk-space checkpoint fix.
+        pickle.dump(log, open(f"results/phase_e_condition_{condition}_log.pkl", "wb"))
 
-    pickle.dump(log, open(f"results/phase_e_condition_{condition}_log.pkl", "wb"))
     return log
 
 

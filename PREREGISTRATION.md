@@ -335,4 +335,29 @@ experiment code is written, per the same discipline used in Phase C.
 
 ### Result (fill in AFTER running the experiment — do not edit the hypothesis above once the corresponding phase begins)
 
-*(empty — to be filled in after Phase E is run)*
+**Not supported, in the opposite direction than predicted -- a real and surprising
+finding.** Full write-up in `results/phase_e_conclusion.md`; summary:
+
+- Conditions A, B, C (all recursive-training variants) showed **zero measurable
+  degradation** in genuine causal discrimination (chain/fork/collider) across all 4
+  generations -- correlations identical to 10+ decimal places from generation 0 to 3,
+  confirmed as genuine (not a coincidental constant) both mathematically (a constant can't
+  produce r=0.99 with varying true answers) and via direct token-level diagnostic
+  (different questions get different, correct-direction answers).
+- Condition D -- the non-recursive control, expected to be the stable baseline -- collapsed
+  instead: undefined correlation (constant output) by generation 1, correlation flipped to
+  -0.987 (answering backwards) by generation 2, with the ablation check producing zero
+  parseable outputs. Confirmed via direct diagnostic: D-gen-2 answers "10%" to every
+  question regardless of content.
+- P1, P2 not supported (recursion wasn't the damaging factor; D was). P3 inconclusive
+  (diversity metric underpowered as implemented).
+- Confounded-topology floor (0% accuracy) persisted unchanged in every condition and
+  generation -- neither harmed nor fixed by any training regime tested.
+- **Important disclosed confound:** Condition D's implementation differs from A/B/C in
+  optimization dynamics (many small-batch immediate updates vs. few large-batch epochs),
+  not just data source -- so this result shows something real and asymmetric happened, but
+  cannot cleanly isolate "recursion" as the cause vs. the accompanying difference in
+  training regime. Flagged as the natural next follow-up.
+- Condition D generation 3 was not completed (Colab session limits after an earlier
+  runtime reset); trend from gen 0->2 was clear enough for the headline finding but the
+  4-generation comparison is incomplete for D specifically.

@@ -1,11 +1,12 @@
-# Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C, Phase D)
+# Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C, Phase D, Phase E)
 
-**Last updated:** after Phase D completion, before Phase E.
+**Last updated:** after Phase E completion, before Phase F.
 
-This document synthesizes what has actually been found across the five completed
+This document synthesizes what has actually been found across the six completed
 phases, separated from the phase-by-phase working notes in `docs/phase0_setup.md`,
 `results/phase_a_conclusion.md`, `results/phase_b_conclusion.md`,
-`results/phase_c_conclusion.md`, and `results/phase_d_conclusion.md`. Read those for
+`results/phase_c_conclusion.md`, `results/phase_d_conclusion.md`, and
+`results/phase_e_conclusion.md`. Read those for
 full methodological detail; this file is the consolidated "what do we actually know
 now" summary.
 
@@ -296,7 +297,64 @@ training-iteration axis). **Discrimination test scatter:**
 
 ---
 
-## 6. Cross-Cutting Deductions (things learned across all four phases)
+## 6. Phase E — RQ5: Robustness/Collapse (not supported — in the opposite direction than
+predicted, and genuinely surprising)
+
+**Setup:** 4 conditions (A: vanilla recursive self-training, B: +7.5% real-data-anchored,
+C: diversity-filtered, D: non-recursive continued-training control), 3 generations each
+starting from the iteration-135 checkpoint, run on Colab GPU. Predictions pre-registered
+(commit `92c800c`) before any Phase E code existed, adapted to what Phases C/D actually
+established (no clean ablation signature exists on confounded to track degradation of;
+genuine competence exists specifically on chain/fork/collider, per Phase D's discrimination
+test — that became the metric Phase E tracks).
+
+**Headline result: recursive training showed zero degradation; the non-recursive control
+collapsed instead.** Conditions A, B, and C all showed **identical discrimination
+correlation to 10+ decimal places across all 4 generations** — the exact same numbers at
+generation 3 (three rounds of recursive self-training later) as at generation 0 (the
+untouched Phase A checkpoint). Condition D — expected to be the stable baseline — collapsed
+within 2 generations: correlation became undefined (constant output) by generation 1, then
+flipped to -0.987 (answering backwards) by generation 2, with its ablation check producing
+zero parseable outputs.
+
+**This was verified as genuine, not a bug or coincidence, two ways:** (1) mathematically, a
+constant-output model cannot produce r≈0.99 with genuinely varying true answers — the
+identical A/B/C numbers require real, preserved discrimination, not a lucky frozen
+constant; (2) directly, a token-level diagnostic showed generation-3 Condition A correctly
+answering two very different questions with two different, correct-direction tokens (" 80%"
+vs " 10%"), while generation-2 Condition D answered **both** questions with the identical
+token (" 10%") regardless of content — genuine, confirmed collapse.
+
+**An important confound is disclosed, not hidden:** Condition D's implementation differs
+from A/B/C in optimization dynamics (many small-batch immediate gradient updates vs. few
+large-batch epochs over a fixed corpus), not just in data source (fresh vs. self-generated).
+This means the result cannot cleanly isolate "recursion" as the causal factor — it shows
+something real and asymmetric happened, but the asymmetry might be about batch
+size/update frequency rather than recursion per se. This is flagged as the clear next
+follow-up (match optimization dynamics exactly, vary only data source) rather than
+overclaimed as "recursion is protective."
+
+**A real infrastructure lesson, again:** the Colab session hosting this run reset mid-way
+through (the same failure mode hit repeatedly across this project), losing an entire first
+full attempt. The recovery — download logs immediately after training instead of waiting
+until after evaluation, back up checkpoints to Google Drive rather than relying on
+ephemeral `/content` — worked, but also exposed a real bug: `phase_e_recursive.py` only
+wrote each condition's log to disk *after* its full generation loop finished, so
+Condition D's log was lost entirely when its generation-3 run never completed (only the
+raw `.pt` checkpoint files survived, since those save per-generation already). Fixed to
+save the log incrementally after every generation, matching the same lesson from Phase A's
+disk-space checkpoint bug — but the fix came only after the loss.
+
+**Confounded-topology floor:** unchanged (0%) in every single condition and generation —
+neither the collapse nor the recursive stability affected this pre-existing floor either
+way.
+
+**Full write-up:** `results/phase_e_conclusion.md`. **Plot:**
+`results/phase_e_discrimination_plot.png`.
+
+---
+
+## 7. Cross-Cutting Deductions (things learned across all six phases)
 
 1. **Small-model, small-batch RL settings are noisy enough that "phase
    transition" claims need real skepticism.** Phase A's per-iteration
@@ -414,20 +472,37 @@ training-iteration axis). **Discrimination test scatter:**
     pre-registration/inspect-raw-outputs discipline consistently rather than
     from a specifically-targeted confirmatory test.
 
+11. **A surprising result that contradicts the pre-registered hypothesis is
+    not automatically wrong — but it demands more verification before being
+    believed, not less.** Phase E's headline finding (recursive training
+    stable, non-recursive control collapsed) is the opposite of what was
+    predicted, which made it tempting to either dismiss it as a bug or
+    accept it uncritically because it's a more interesting story. Neither
+    was appropriate: it was verified two independent ways (a mathematical
+    argument ruling out coincidental collapse, and a direct token-level
+    diagnostic showing genuinely different, correct-direction answers)
+    before being written up, and even then, a real, disclosed confound
+    (optimization dynamics differing between conditions) was flagged rather
+    than let the surprising result stand as a clean, publication-ready claim
+    it isn't quite entitled to be yet.
+
+12. **A bug can hide inside "it eventually worked."** `phase_e_recursive.py`
+    only wrote each condition's log to disk after its entire generation loop
+    finished — which worked fine every time a condition completed normally,
+    and silently lost the entire log the one time a run was interrupted
+    mid-condition. The bug was invisible in every successful run and only
+    surfaced under the specific failure condition (a Colab session dying
+    mid-generation) that the project had already hit twice before. The
+    lesson isn't "test for interruptions" specifically — it's that code
+    which only writes results at the very end of a long-running loop is
+    making a bet that the loop won't be interrupted, and in an environment
+    that has already demonstrated it interrupts long loops, that bet had
+    already lost twice before this made it three.
+
 ---
 
-## 7. What's Still Open Going Into Phase E
+## 8. What's Still Open Going Into Phase F
 
-- Phase A's counterfactual-rung jump (iteration 86) has no known mechanistic
-  correlate yet — Phase B only investigated the *intervention* circuit, per
-  RQ2's scope. Whether counterfactual reasoning shares components with the
-  intervention circuit found here is untested.
-- Phase B's leave-one-topology-out follow-up (a stricter transfer test) has
-  not been run.
-- Phase B did not measure per-topology baseline (unpatched) accuracy, so
-  collider's slightly lower transfer score (0.904 vs. ~0.97–0.98 elsewhere)
-  cannot yet be cleanly attributed to circuit-specificity vs. collider
-  questions simply being intrinsically harder for the model in general.
 - ~~Is the model's 0% interventional competence specific to confounded, or a
   broader shortcut on chain/fork/collider too?~~ **Resolved:** a
   discrimination test confirmed genuine, direction-correct (if coarse)
@@ -437,6 +512,15 @@ training-iteration axis). **Discrimination test scatter:**
   a length-matched neutral control matched `implicit` exactly at all 10
   checkpoints; both real effects found are attributable to scaffolding
   content, not length.
+- **New, highest-priority open question from Phase E:** is Condition D's
+  collapse actually about non-recursive training, or about the disclosed
+  optimization-dynamics confound (many small-batch immediate updates vs. a
+  few large-batch epochs)? A follow-up matching batch size/epoch structure
+  exactly across conditions, varying only the data source, would settle
+  this and turn Phase E's surprising-but-confounded result into a clean one.
+- Phase E's Condition D generation 3 was never completed (Colab compute
+  limits) — the gen 0→2 trend was clear enough for the headline finding, but
+  a complete 4-generation comparison for D is still missing.
 - Phase A's counterfactual-rung jump (iteration 86) has no known mechanistic
   correlate yet — Phase B only investigated the *intervention* circuit, per
   RQ2's scope. Whether counterfactual reasoning shares components with the
@@ -460,8 +544,7 @@ training-iteration axis). **Discrimination test scatter:**
   is itself worth investigating — is this a general property of this
   model's percentage-answering behavior, or specific to unconfounded
   intervention questions?
-- Phase E's recursive-training design should track chain/fork/collider's
-  *genuine* competence and confounded's *already-absent* competence as two
-  distinct baselines, not one undifferentiated "interventional competence"
-  — the sharpened Phase D picture makes this distinction available for the
-  first time.
+- Phase E's output-diversity metric was underpowered as implemented (single
+  fixed prompt, 10 samples) and did not meaningfully test Prediction 3 —
+  would need redesigning (more prompts/samples, or distinct-n-gram style
+  measures) for a real test of output collapse.
