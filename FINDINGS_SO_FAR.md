@@ -1,6 +1,14 @@
 # Findings and Conclusions So Far (Phase 0, Phase A, Phase B, Phase C, Phase D, Phase E)
 
-**Last updated:** after Phase E completion, before Phase F.
+**Last updated:** after Phase E completion and a post-Phase-E robustness follow-up, before
+Phase F. See `docs/publication_roadmap.md` for the publication strategy and
+`results/robustness_followup.md` for two robustness checks added after an external
+deeper-research session's review: (1) Phase C's ablation finding survives a switch from
+mean to resample ablation methodology (0% accuracy floor holds under both; the specific
+directional-bias sub-claim is methodology-sensitive, as Miller/Chughtai 2407.08734 would
+predict); (2) Phase B's cross-topology transfer (std ≤0.017 across 5 seeds) and Phase D's
+discrimination correlation (std ≤0.005 across 5 seeds) are both highly stable, not
+single-seed artifacts.
 
 This document synthesizes what has actually been found across the six completed
 phases, separated from the phase-by-phase working notes in `docs/phase0_setup.md`,

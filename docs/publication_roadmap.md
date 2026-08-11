@@ -1,5 +1,19 @@
 # Publication Roadmap: Handoff Document
 
+**Progress update (added after this document was first written):** this document was
+handed to an external deeper-research session (claude.ai), which returned a refined
+strategic plan — reframe around the "mechanistic consistency ≠ correctness" headline
+(matches this doc's own §5 priority ranking), target TMLR, scale to Pythia, and a
+prioritized experiment list. Several of that report's most load-bearing citations were
+independently verified via web search (Makelov et al. 2311.17030, Miller/Chughtai
+2407.08734, Tigges et al. 2407.10827, Lu et al. 2512.20760, TMLR editorial policy, MechRL
+2605.26343, Apart Research's LLC/GRPO project, Pythia's checkpoint structure — all checked
+out as real and accurately described). **The two no-new-infrastructure items from that
+report's prioritized list (ablation-methodology robustness; multi-seed CIs on headline
+numbers) are now done** — see `results/robustness_followup.md`. Everything requiring new
+compute budget (Pythia scale-up, the RQ5 2×2, the RQ1 redesign) remains as described below,
+pending a deliberate compute-budget decision.
+
 **Purpose of this document:** a self-contained briefing for a fresh research/planning
 session (no prior context on this project) to (a) understand everything found so far, and
 (b) help design the follow-up work needed to make this publication-worthy at a level above
