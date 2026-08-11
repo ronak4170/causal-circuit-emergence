@@ -10,9 +10,16 @@ independently verified via web search (Makelov et al. 2311.17030, Miller/Chughta
 2605.26343, Apart Research's LLC/GRPO project, Pythia's checkpoint structure — all checked
 out as real and accurately described). **The two no-new-infrastructure items from that
 report's prioritized list (ablation-methodology robustness; multi-seed CIs on headline
-numbers) are now done** — see `results/robustness_followup.md`. Everything requiring new
-compute budget (Pythia scale-up, the RQ5 2×2, the RQ1 redesign) remains as described below,
-pending a deliberate compute-budget decision.
+numbers) are now done** — see `results/robustness_followup.md`. **The RQ5 2×2 (item 8
+below) was also attempted**, on the same free-tier Colab GPU used throughout this project
+(GPT-2 small, no new spend) — result: not fully resolved, but narrowed. All four cells of
+the 2×2 were stable, including the one matching the original collapsed condition's
+mechanism, but a step-count audit revealed the new run used ~4x fewer gradient steps per
+generation than the original — so training volume is now a third candidate explanation
+alongside recursion and batch dynamics. See `results/phase_e_2x2_conclusion.md` for the
+full write-up and the precise next design (hold total gradient steps constant) needed to
+finish resolving this. Everything requiring new compute *budget* (the Pythia scale-up, the
+RQ1 redesign) remains as described below, pending a deliberate spend decision.
 
 **Purpose of this document:** a self-contained briefing for a fresh research/planning
 session (no prior context on this project) to (a) understand everything found so far, and
