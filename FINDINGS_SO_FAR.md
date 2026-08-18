@@ -14,6 +14,13 @@ optimization dynamics — result: all four cells were stable (including the one 
 original collapsed condition's mechanism), but a step-count audit found the new run used
 ~4x fewer gradient steps per generation than the original, so training volume is now a
 third candidate explanation. Not yet resolved; the precise next design is specified there.
+Also see `results/phase_a2_conclusion.md` for the RQ1 follow-up (weakened warm-up + doubled
+batch, fixing the original association-ceiling confound): the behavioral fix worked
+(association now shows a real, isolated, detected jump at iteration 81, unlike the
+original run), but the LLC trajectory still shows no detectable transition anywhere —
+flat within noise across all 15 checkpoints — a weaker LLC-behavior correspondence than
+even the original run had. A genuine, informative negative result for RQ1's LLC-based
+approach specifically.
 
 This document synthesizes what has actually been found across the six completed
 phases, separated from the phase-by-phase working notes in `docs/phase0_setup.md`,

@@ -18,8 +18,12 @@ mechanism, but a step-count audit revealed the new run used ~4x fewer gradient s
 generation than the original — so training volume is now a third candidate explanation
 alongside recursion and batch dynamics. See `results/phase_e_2x2_conclusion.md` for the
 full write-up and the precise next design (hold total gradient steps constant) needed to
-finish resolving this. Everything requiring new compute *budget* (the Pythia scale-up, the
-RQ1 redesign) remains as described below, pending a deliberate spend decision.
+finish resolving this. **The RQ1 redesign was also attempted** (item 4/6 below), again on
+free-tier Colab GPU, no spend needed — result: the behavioral fix worked (association now
+shows a real, isolated, detected jump, unlike the original run), but the LLC signal still
+shows no detectable transition anywhere, a weaker LLC-behavior correspondence than even the
+original run. See `results/phase_a2_conclusion.md`. Only the Pythia scale-up remains as a
+genuine spend decision, described below.
 
 **Purpose of this document:** a self-contained briefing for a fresh research/planning
 session (no prior context on this project) to (a) understand everything found so far, and
