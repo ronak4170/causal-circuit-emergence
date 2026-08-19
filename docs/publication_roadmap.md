@@ -22,8 +22,24 @@ finish resolving this. **The RQ1 redesign was also attempted** (item 4/6 below),
 free-tier Colab GPU, no spend needed — result: the behavioral fix worked (association now
 shows a real, isolated, detected jump, unlike the original run), but the LLC signal still
 shows no detectable transition anywhere, a weaker LLC-behavior correspondence than even the
-original run. See `results/phase_a2_conclusion.md`. Only the Pythia scale-up remains as a
-genuine spend decision, described below.
+original run. See `results/phase_a2_conclusion.md`.
+
+**The Pythia-410M scale-up (the go/no-go gate) is now complete, done entirely on free-tier
+Colab GPU, no paid spend.** All three headline GPT-2 findings were replicated on an
+independently trained 410M-parameter model with a different architecture (GPT-NeoX, 24
+layers/16 heads, vs. GPT-2's 12/12): (1) Phase B's circuit localization + cross-topology
+transfer — Pythia's circuit is MORE concentrated (one head, L13H10, ~9x the next-largest
+effect) and transfers with higher fidelity (96.8-98.8% vs. GPT-2's 90-98%), validated
+against a random-circuit baseline at the 100th percentile; (2) Phase C's ablation
+signature — a near-exact replication of the confounded-topology floor effect, including an
+identical directional-bias result (50.0%/p=0.540 in BOTH models), with an even MORE
+complete output collapse under ablation at Pythia's scale (see
+`results/phase_c_pythia_conclusion.md`); (3) Phase D's discrimination test — correlations
+statistically indistinguishable from GPT-2's (0.985/0.989/0.998 vs. GPT-2's
+0.981/0.981/0.999) (see `results/phase_d_pythia_conclusion.md`). This satisfies the
+go/no-go criterion: the "mechanistic consistency without behavioral correctness" story is
+not a GPT-2-small artifact — it replicates, in some respects more strongly, at scale. The
+1.4B further scale-up and any paid GPU spend remain a separate, not-yet-made decision.
 
 **Purpose of this document:** a self-contained briefing for a fresh research/planning
 session (no prior context on this project) to (a) understand everything found so far, and
