@@ -29,7 +29,8 @@ def is_correct(predicted_prob, oracle_prob, tolerance=0.10):
 
 
 def rft_iteration(model, task_batch, device, tolerance=0.10,
-                   n_samples_per_question=4, temperature=0.8, verbose=False):
+                   n_samples_per_question=4, temperature=0.8, verbose=False,
+                   max_new_tokens=15):
     """
     task_batch: list of dicts with keys {"question": str, "oracle_answer": float, "rung": str}
     Returns: list of (prompt, accepted_generation_text) pairs for fine-tuning,
@@ -46,7 +47,7 @@ def rft_iteration(model, task_batch, device, tolerance=0.10,
         found_correct = False
         for _ in range(n_samples_per_question):
             tokens = model.to_tokens(prompt)
-            generated = model.generate(tokens, max_new_tokens=15,
+            generated = model.generate(tokens, max_new_tokens=max_new_tokens,
                                         temperature=temperature, do_sample=True,
                                         verbose=False)
             # Slice on token count, not string length: to_string(generated[0])[len(prompt):]
