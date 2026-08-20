@@ -41,6 +41,26 @@ go/no-go criterion: the "mechanistic consistency without behavioral correctness"
 not a GPT-2-small artifact — it replicates, in some respects more strongly, at scale. The
 1.4B further scale-up and any paid GPU spend remain a separate, not-yet-made decision.
 
+**Phase F (training-time do-calculus scaffolding, the "can we fix it" follow-up) is also
+complete** — see `results/phase_f_conclusion.md`. Tested whether baking a worked
+do-calculus rationale into RFT training targets (not just inference-time prompts, which
+Phase D already showed doesn't help) could surface genuine confounded-topology
+interventional competence. Result: negative, for a specific, diagnosed reason. Post-RFT,
+neither the rationale nor a matched no-rationale control condition cleared the 0% floor;
+inspecting raw generations showed neither condition produces rationale text by the final
+checkpoint at all (outcome-only RFT has no mechanism to preserve it). A pre-RFT diagnostic
+(after catching and fixing a real bug in the first version — greedy decoding was silently
+suppressing the rationale, and the "rationale present" check was a length heuristic that
+falsely counted the degenerate-repeat failure mode as rationale content) found the
+rationale essentially never gets produced for confounded-topology questions even before
+RFT touches it, at 0/400 sampled completions — root-caused to thin, diluted warm-up
+dosage (~6% of the training set was confounded-specific rationale content), not RFT
+erosion. This closes the "can a specific intervention fix the gap" question: three
+independent attempts (ablation in Phase C, inference-time scaffolding in Phase D,
+training-time scaffolding in Phase F) have now failed for three different, precisely
+diagnosed reasons — a complete, honest negative result worth writing up as-is rather than
+iterating further.
+
 **Purpose of this document:** a self-contained briefing for a fresh research/planning
 session (no prior context on this project) to (a) understand everything found so far, and
 (b) help design the follow-up work needed to make this publication-worthy at a level above
