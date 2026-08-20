@@ -31,20 +31,20 @@ these without invalidating the others.
 
 ## Timeline (16 weeks)
 
-- **Phase 0 (Weeks 1–3):** Environment setup; reproduce grokking + LLC phase transition on
+- **Phase 0 :** Environment setup; reproduce grokking + LLC phase transition on
   modular arithmetic; reproduce the IOI circuit via activation patching on GPT-2 small.
   Validation that the tools work before touching the real research question.
-- **Phase A (Weeks 4–6):** RQ1 — train on a curriculum spanning all three query rungs, track
+- **Phase A :** RQ1 — train on a curriculum spanning all three query rungs, track
   per-rung accuracy and LLC, look for separable phase transitions.
-- **Phase B (Weeks 7–9):** RQ2 — identify the interventional-reasoning circuit via patching,
+- **Phase B :** RQ2 — identify the interventional-reasoning circuit via patching,
   test cross-topology transfer (fork ↔ chain ↔ collider).
-- **Phase C (Weeks 9–11):** RQ3 — pre-register the predicted ablation error pattern before
+- **Phase C :** RQ3 — pre-register the predicted ablation error pattern before
   running the experiment, then ablate and classify errors.
-- **Phase D (Weeks 10–12):** RQ4 — matched implicit/explicit prompt pairs, track the accuracy
+- **Phase D :** RQ4 — matched implicit/explicit prompt pairs, track the accuracy
   gap vs. training step, overlay on Phase A/B/C signals.
-- **Phase E (Weeks 13–14):** RQ5 — recursive RL generations, track degradation rates per
+- **Phase E :** RQ5 — recursive RL generations, track degradation rates per
   query type.
-- **Phase F (Weeks 15–16):** Write-up, arXiv preprint, workshop submission.
+- **Phase F :** Write-up, arXiv preprint, workshop submission.
 
 ## Tech Stack
 
@@ -57,72 +57,8 @@ these without invalidating the others.
   for activation/path patching and circuit identification
 - **Core libraries:** PyTorch, numpy, pandas, matplotlib, seaborn, scikit-learn, networkx
 
-## Compute Requirements
 
-Single university GPU, A100-class. Phase 0's grokking task can run on CPU if GPU access
-isn't ready yet.
 
-## Status
-
-**Phase 0: complete.** Grokking + LLC and IOI patching reproductions validated the tooling
-(see [docs/phase0_setup.md](docs/phase0_setup.md)).
-
-**Phase A: complete — partial support, weak (leaning falsification).** See
-[results/phase_a_conclusion.md](results/phase_a_conclusion.md) for the full write-up. LLC
-showed one clear, replicated transition early in training; per-rung accuracy jumps were
-noisy and not cleanly ordered as Pearl's hierarchy predicts, and the association rung's
-emergence was untestable due to a warm-up-induced ceiling effect.
-
-**Phase B: complete — full transfer supported, with a caveat.** See
-[results/phase_b_conclusion.md](results/phase_b_conclusion.md). A small 7-component circuit
-(attention heads L7H5, L10H7, L8H11 + MLP layers 7/9/10/11) restored 90–98% of clean-run
-behavior across all four DAG topologies on held-out questions, decisively beating a
-random-circuit baseline (25 random circuits averaged 26.7% vs. the candidate's 95.8%, 100th
-percentile). Caveat: the circuit was identified from a batch spanning all topologies at once,
-not a strict leave-one-topology-out test — listed as a follow-up.
-
-**Phase C: complete — all three pre-registered predictions not supported, with an
-important finding underneath.** See [results/phase_c_conclusion.md](results/phase_c_conclusion.md).
-Predictions pre-registered and pushed (commit `e2ae1c7`) before any experiment code was
-written. The un-ablated model turned out to already be at 0% interventional accuracy on
-the one topology where the directional test was even meaningful (confounded), already
-answering in the associational direction 100% of the time — leaving no room for ablation
-to show a *shift*. Ablation instead collapsed the model to a constant output, revealing
-the circuit maintains input-sensitivity rather than correct do-calculus. Also surfaces a
-caveat for Phase B's transfer claim (mechanistic consistency ≠ correctness).
-
-**Phase D: complete — effectively falsified (no meaningful gap existed to close), which
-independently corroborates Phase C.** See [results/phase_d_conclusion.md](results/phase_d_conclusion.md).
-Across 10 checkpoints × 4 topologies, only 1 of 40 cells showed a statistically real
-implicit/explicit gap (and it was negative — scaffolding hurt, not helped). Confounded
-topology — the only one diagnostic of real intervention reasoning — scored exactly 0% for
-both prompt styles at every checkpoint, matching Phase C's ablation finding via a fully
-independent, non-mechanistic method. Two follow-up checks sharpened this further: a
-length-matched control ruled out prompt length as the explanation for the one real effect
-found, and a discrimination test confirmed chain/fork/collider's accuracy reflects genuine
-(if coarse) causal competence (r=0.99+) rather than memorized constants — so the picture is
-not "no causal competence anywhere" but "genuine competence on unconfounded topologies,
-complete floor on confounded specifically."
-
-**Phase E: complete — not supported, in the opposite direction than predicted.** See
-[results/phase_e_conclusion.md](results/phase_e_conclusion.md). Across 3-4 generations of
-recursive RL fine-tuning starting from the iteration-135 checkpoint, all three recursive
-conditions (vanilla, real-data-anchored, diversity-filtered) showed **zero** measurable
-degradation in genuine causal competence — while the non-recursive control condition
-collapsed to context-insensitive constant outputs within 2 generations. Confirmed genuine
-via direct token-level diagnostics, not just aggregate correlation. A disclosed
-optimization-dynamics confound (batch size/update frequency differed between the
-non-recursive control and the recursive conditions, not just data source) means this can't
-yet cleanly isolate "recursion" as the causal factor — flagged as the natural next
-follow-up rather than overclaimed.
-
-Phase F has not started; hypotheses are pre-registered in
-[PREREGISTRATION.md](PREREGISTRATION.md) ahead of any experimentation.
-
-## Project Context
-
-This is an undergraduate research project conducted at [Knox College], aimed at building a
-PhD application portfolio, supervised by [FACULTY MENTOR NAME].
 
 ## Related Work
 
