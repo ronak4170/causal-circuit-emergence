@@ -67,9 +67,9 @@ session (no prior context on this project) to (a) understand everything found so
 a workshop/short paper. Written after completing Phases 0 and A-E of a 16-week
 undergraduate research project.
 
-Repo: https://github.com/ronak4170/causal-circuit-emergence (all code, data, and full
-phase-by-phase conclusion docs are there — this document is a compressed summary of
-`FINDINGS_SO_FAR.md` plus a forward-looking research agenda that file doesn't contain).
+Repo: [link anonymized for review] (all code, data, and full phase-by-phase conclusion
+docs are there — this document is a compressed summary of `FINDINGS_SO_FAR.md` plus a
+forward-looking research agenda that file doesn't contain).
 
 ---
 

@@ -121,8 +121,9 @@ Phase F has not started; hypotheses are pre-registered in
 
 ## Project Context
 
-This is an undergraduate research project conducted at [Knox College], aimed at building a
-PhD application portfolio, supervised by [FACULTY MENTOR NAME].
+This is an undergraduate research project conducted at [institution anonymized for
+review], aimed at building a PhD application portfolio, supervised by [mentor name
+anonymized for review].
 
 ## Related Work
 
